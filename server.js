@@ -193,6 +193,63 @@ app.get('/products', async (req, res) => {
   }
 })
 
+app.get('/products/unique', async (req, res) => {
+  try {
+
+    const uniqueProducts = await Product.aggregate([
+      {
+        $group: {
+          _id: "$modelKey",
+          product: { $first: "$$ROOT" }
+        }
+      },
+      {
+        // Replace root with actual product object
+        $replaceRoot: { newRoot: "$product" }
+      }
+    ]);
+    res.json(uniqueProducts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching unique products" });
+  }
+});
+
+// ==================================================
+// GET UNIQUE PRODUCTS BY BRAND (1 IMAGE PER MODEL)
+// ==================================================
+
+app.get('/api/products/brand/:brand', async (req, res) => {
+  try {
+    const brandName = req.params.brand;
+    const products = await Product.aggregate([
+      {
+        $match: {
+          brand: brandName
+        }
+      },
+
+      // 🔹 Group by modelKey (1 per model)
+      {
+        $group: {
+          _id: "$modelKey",
+          product: { $first: "$$ROOT" }
+        }
+      },
+
+      // 🔹 Replace output structure
+      {
+        $replaceRoot: { newRoot: "$product" }
+      }
+
+    ]);
+    res.json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching brand products" });
+  }
+});
+
 app.delete('/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
