@@ -219,7 +219,7 @@ app.get('/products/unique', async (req, res) => {
 // GET UNIQUE PRODUCTS BY BRAND (1 IMAGE PER MODEL)
 // ==================================================
 
-app.get('/api/products/brand/getByBrand/:brand', async (req, res) => {
+app.get('/products/brand/:brand', async (req, res) => {
   try {
     const brandName = req.params.brand;
     const products = await Product.aggregate([
