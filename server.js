@@ -206,6 +206,11 @@ app.get('/products/unique', async (req, res) => {
       {
         // Replace root with actual product object
         $replaceRoot: { newRoot: "$product" }
+      },
+      {
+        $match: {
+          imageUrl: { $exists: true, $ne: "" }
+        }
       }
     ]);
     res.json(uniqueProducts);
@@ -240,6 +245,11 @@ app.get('/products/brand/:brand', async (req, res) => {
       // 🔹 Replace output structure
       {
         $replaceRoot: { newRoot: "$product" }
+      },
+      {
+        $match: {
+          imageUrl: { $exists: true, $ne: "" }
+        }
       }
 
     ]);
